@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿/*
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace qc_info_viewer.Main;
@@ -185,3 +186,4 @@ public class Parser(string filePath)
     private readonly StreamReader sr = new(filePath);
     private static Regex dquotes = new("");
 }
+*/

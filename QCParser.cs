@@ -13,6 +13,8 @@ public struct Attachments
 {
     public string AttachmentName;
     public string BoneName;
+    public string Pos;
+    public string Rot;
 }
 
 public struct IncludedModel
@@ -86,7 +88,9 @@ public class QCParser
                 var attachments = new Attachments()
                 {
                     AttachmentName = line.Split('"')[1],
-                    BoneName = line.Split('"')[3]
+                    BoneName = line.Split('"')[3],
+                    Pos = line.Split(' ')[3] + " " + line.Split(' ')[4] + " " + line.Split(' ')[5],
+                    Rot = line.Split(' ')[7] + " " + line.Split(' ')[8] + " " + line.Split(' ')[9]
                 };
                 
                 info.attachments.Add(attachments);

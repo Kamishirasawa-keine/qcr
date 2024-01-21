@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿/*
+using System.Text.RegularExpressions;
 
 namespace Main;
 
@@ -76,3 +77,4 @@ partial class Parser2
         return tokens;
     }
 }
+*/

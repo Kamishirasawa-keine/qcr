@@ -44,6 +44,8 @@ namespace qc_reader {
             var info = parser.Parse();
             //stopwatch.Stop();
 
+           
+
             //PathBox.Text = stopwatch.ElapsedMilliseconds.ToString();
 
             var modelName = new TreeViewItem() { 
@@ -86,7 +88,7 @@ namespace qc_reader {
             {
                 var item = new TreeViewItem()
                 {
-                    Header = $"Name: {attachments_v.AttachmentName}, Bone: {attachments_v.BoneName}"
+                    Header = $"Name: {attachments_v.AttachmentName}, Bone: {attachments_v.BoneName}, Posistion: {attachments_v.Pos}, Rotation: {attachments_v.Rot}"
                 };
 
                 attachments.Items.Add(item);
