@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Reflection.PortableExecutable;
+using System.Security.Policy;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,6 +11,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
@@ -36,16 +39,17 @@ namespace qc_reader {
         {
             //TView_Root = new TreeViewItem();
             var parser = new QCParser(PathBox.Text);
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            //var stopwatch = new Stopwatch();
+            //stopwatch.Start();
             var info = parser.Parse();
-            stopwatch.Stop();
+            //stopwatch.Stop();
 
-            PathBox.Text = stopwatch.ElapsedMilliseconds.ToString();
+            //PathBox.Text = stopwatch.ElapsedMilliseconds.ToString();
 
             var modelName = new TreeViewItem() { 
                 Header = $"Model Name: {info.modelName}" 
             };
+            
             var bodyGroups = new TreeViewItem()
             {
                 Header = "Body Groups"
@@ -82,71 +86,10 @@ namespace qc_reader {
             {
                 var item = new TreeViewItem()
                 {
-                    Header = $"名称：{attachments_v.AttachmentName}，骨骼：{attachments_v.BoneName}"
+                    Header = $"Name: {attachments_v.AttachmentName}, Bone: {attachments_v.BoneName}"
                 };
 
                 attachments.Items.Add(item);
-            }
-            foreach (var model in info.models)
-            {
-                var item = new TreeViewItem()
-                {
-                    Header = $"{model.name} ({model.model})"
-                };
-                var flexFile = new TreeViewItem()
-                {
-                    Header = $"Flex File ({model.flexFile.name})"
-                };
-                var flexes = new TreeViewItem()
-                {
-                    Header = "Flexes"
-                };
-                foreach (var ffv in model.flexFile.flexes)
-                {
-                    var flex = new TreeViewItem()
-                    {
-                        Header = ffv.name
-                    };
-                    var frame = new TreeViewItem()
-                    {
-                        Header = $"Frame: {ffv.frame}"
-                    };
-                    flex.Items.Add(frame);
-                    flexes.Items.Add(flex);
-                }
-                flexFile.Items.Add(flexes);
-                var flexControllers = new TreeViewItem()
-                {
-                    Header = "Flex Controllers"
-                };
-                foreach (var ffv in model.flexControllers)
-                {
-                    var con = new TreeViewItem()
-                    {
-                        Header = "unimp"
-                    };
-                    flexControllers.Items.Add(con);
-                }
-                var vars = new TreeViewItem()
-                {
-                    Header = "vars"
-                };
-                foreach (var v in model.vars)
-                {
-                    var vv = new TreeViewItem()
-                    {
-                        Header = v.name
-                    };
-                    vv.Items.Add(new TreeViewItem()
-                    {
-                        Header = v.value
-                    });
-                    vars.Items.Add(vv);
-                }
-                item.Items.Add(vars);
-                item.Items.Add(flexFile);
-                item.Items.Add(flexControllers);
-                //models.Items.Add(item);
             }
             var includedmodel = new TreeViewItem()
             {
@@ -161,11 +104,24 @@ namespace qc_reader {
 
                 includedmodel.Items.Add(item);
             }
+            var materialpath = new TreeViewItem()
+            {
+                Header = "Material Path: "
+            };
+            foreach (var materialsPaths_v in info.materialsPaths)
+            {
+                var item = new TreeViewItem()
+                {
+                    Header = materialsPaths_v.path
+                };
+
+                materialpath.Items.Add(item);
+            }
             TView_Root.Items.Add(modelName);
             TView_Root.Items.Add(bodyGroups);
-            //TView_Root.Items.Add(models);
             TView_Root.Items.Add(attachments);
             TView_Root.Items.Add(includedmodel);
+            TView_Root.Items.Add(materialpath);
         }
     }
 }

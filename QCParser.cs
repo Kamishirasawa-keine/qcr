@@ -8,42 +8,6 @@ public struct BodyGroups
     public string name;
     public List<string> models;
 }
-public struct Model
-{
-    public struct Flex
-    {
-        public string name;
-        public int frame;
-    }
-    public struct FlexFile
-    {
-        public string name;
-        public List<Flex> flexes;
-    }
-    public struct mvar
-    {
-        public string name;
-        public string value;
-    }
-    public string name;
-    public string model;
-    public FlexFile flexFile;
-    //public List<FlexController> flexControllers;
-    public List<mvar> vars;
-}
-
-public struct FlexController
-{
-    public string unk0;
-    public string unk1;
-    public int unk2;
-    public int unk3;
-    public string name;
-}
-
-public struct Bone {
-
-}
 
 public struct Attachments
 {
@@ -56,15 +20,20 @@ public struct IncludedModel
     public string model;
 }
 
+public struct MaterialsPath
+{
+    public string path;
+}
+
 public struct QCInfo
 {
     public string modelName;
     public List<BodyGroups> bodyGroups;
-    public List<Model> models;
-    public List<Bone> bones;
     public List<Attachments> attachments;
     public List<IncludedModel> includedModels;
+    public List<MaterialsPath> materialsPaths;
 }
+
 public class QCParser
 {
     public QCParser(string fileName)
@@ -80,9 +49,9 @@ public class QCParser
         var info = new QCInfo()
         {
             bodyGroups = [],
-            models = [],
             attachments = [],
             includedModels = [],
+            materialsPaths = [],
         };
 
         string line;
@@ -130,6 +99,13 @@ public class QCParser
                 }; 
 
                 info.includedModels.Add(included_model);
+            }
+            else if (line.StartsWith("$cdmaterials"))
+            {
+                var material_path = new MaterialsPath();
+                material_path.path = line.Split('"')[1];
+
+                info.materialsPaths.Add(material_path);
             }
         }
         return info;

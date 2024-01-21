@@ -14,13 +14,12 @@
         <GroupBox Header="File" Grid.Column="1">
             <StackPanel HorizontalAlignment="Center"
                         VerticalAlignment="Center">
-                <TextBlock Text="File Path here... (or drag(unimp))" Margin="0 0 0 10"/>
-                <TextBox Margin="0 0 0 20" Width="150" IsEnabled="False" x:Name="PathBox"/>
+                <TextBox Margin="0 0 0 20" Width="150" IsEnabled="True" x:Name="PathBox" ToolTip="File Path here..."/>
                 <Button Click="BrowseFile" Margin="0 0 0 10">Browse</Button>
                 <Button Click="ParseFile">Parse</Button>
             </StackPanel>
         </GroupBox>
-        <GroupBox Header="Info view">
+        <GroupBox Header="Info View">
             <TreeView x:Name="TView">
                 <TreeViewItem Header="Root" x:Name="TView_Root" IsExpanded="True"></TreeViewItem>
             </TreeView>
