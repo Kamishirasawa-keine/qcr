@@ -28,7 +28,7 @@ public struct Model
     public string name;
     public string model;
     public FlexFile flexFile;
-    public List<FlexController> flexControllers;
+    //public List<FlexController> flexControllers;
     public List<mvar> vars;
 }
 
@@ -77,11 +77,13 @@ public class QCParser
     }
     public QCInfo Parse()
     {
-        var info = new QCInfo();
-        info.bodyGroups = new List<BodyGroups>();
-        info.models = new List<Model>();
-        info.attachments = new List<Attachments>();
-        info.includedModels = new List<IncludedModel>();
+        var info = new QCInfo()
+        {
+            bodyGroups = [],
+            models = [],
+            attachments = [],
+            includedModels = [],
+        };
 
         string line;
         while ((line = sr.ReadLine()) != null)
@@ -111,18 +113,20 @@ public class QCParser
             }
             else if (line.StartsWith("$attachment"))
             {
-                var attachments = new Attachments();
-                attachments.AttachmentName = line.Split('"')[1];
-                attachments.BoneName = line.Split('"')[3];
-                sr.ReadLine();
+                var attachments = new Attachments()
+                {
+                    AttachmentName = line.Split('"')[1],
+                    BoneName = line.Split('"')[3]
+                };
                 
                 info.attachments.Add(attachments);
             }
             else if (line.StartsWith("$includemodel"))
             {
-                var included_model = new IncludedModel();
-                included_model.model = line.Split('"')[1];
-                sr.ReadLine();
+                var included_model = new IncludedModel()
+                {
+                    model = line.Split('"')[1]
+                }; 
 
                 info.includedModels.Add(included_model);
             }
