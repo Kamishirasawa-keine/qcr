@@ -94,10 +94,11 @@ public class QCParser
             }
             else if (line.StartsWith("$bodygroup"))
             {
-                var bodyGroups = new BodyGroups();
-                bodyGroups.name = line.Split('"')[1];
-                bodyGroups.models = new List<string>();
-                sr.ReadLine();
+                var bodyGroups = new BodyGroups()
+                {
+                    name = line.Split('"')[1],
+                    models = []
+                };
                 while ((line = ReadAndTrim()) != "}")
                 {
                     if (line.StartsWith("studio"))
