@@ -44,7 +44,7 @@ namespace qc_reader {
             PathBox.Text = stopwatch.ElapsedMilliseconds.ToString();
 
             var modelName = new TreeViewItem() { 
-                Header = "Model Name: " + info.modelName
+                Header = $"Model Name: {info.modelName}" 
             };
             var bodyGroups = new TreeViewItem()
             {
@@ -60,7 +60,7 @@ namespace qc_reader {
                     var nitem = new TreeViewItem();
                     if (model != "Blank")
                     {
-                        nitem.Header = "Model: " + model;
+                        nitem.Header = $"Model: {model}";
                     }else
                     {
                         nitem.Header = "<Empty>";
@@ -82,7 +82,7 @@ namespace qc_reader {
             {
                 var item = new TreeViewItem()
                 {
-                    Header = "名称：" + attachments_v.AttachmentName + "，骨骼：" + attachments_v.BoneName
+                    Header = $"名称：{attachments_v.AttachmentName}，骨骼：{attachments_v.BoneName}"
                 };
 
                 attachments.Items.Add(item);
@@ -91,11 +91,11 @@ namespace qc_reader {
             {
                 var item = new TreeViewItem()
                 {
-                    Header = model.name + '(' + model.model + ')'
+                    Header = $"{model.name} ({model.model})"
                 };
                 var flexFile = new TreeViewItem()
                 {
-                    Header = "Flex File" + '(' + model.flexFile.name + ')'
+                    Header = $"Flex File ({model.flexFile.name})"
                 };
                 var flexes = new TreeViewItem()
                 {
@@ -109,7 +109,7 @@ namespace qc_reader {
                     };
                     var frame = new TreeViewItem()
                     {
-                        Header = "Frame: " + ffv.frame
+                        Header = $"Frame: {ffv.frame}"
                     };
                     flex.Items.Add(frame);
                     flexes.Items.Add(flex);
