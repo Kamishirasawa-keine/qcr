@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Net.Mail;
+using System.Windows.Controls;
 
 namespace qc_reader;
 
@@ -40,8 +41,16 @@ public class QCParser
 {
     public QCParser(string fileName)
     {
-        sr = new StreamReader(fileName);
+        if (File.Exists(fileName))
+        {
+            sr = new StreamReader(fileName);
+        }
+        else
+        {
+            throw new FileNotFoundException(fileName, $"Can't find file.{fileName}");
+        }
     }
+
     private string ReadAndTrim()
     {
         return sr.ReadLine().Trim();
@@ -55,7 +64,7 @@ public class QCParser
             includedModels = [],
             materialsPaths = [],
         };
-
+        
         string line;
         while ((line = sr.ReadLine()) != null)
         {
@@ -92,7 +101,7 @@ public class QCParser
                     Pos = line.Split(' ')[3] + " " + line.Split(' ')[4] + " " + line.Split(' ')[5],
                     Rot = line.Split(' ')[7] + " " + line.Split(' ')[8] + " " + line.Split(' ')[9]
                 };
-                
+
                 info.attachments.Add(attachments);
             }
             else if (line.StartsWith("$includemodel"))
