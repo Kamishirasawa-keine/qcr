@@ -28,6 +28,13 @@ public struct MaterialsPath
     public string path;
 }
 
+public struct Jigglebone
+{
+    public string Name;
+    public List<string> PropertyGroups;
+    public List<string> Property;
+}
+
 public struct QCInfo
 {
     public string modelName;
@@ -35,6 +42,7 @@ public struct QCInfo
     public List<Attachments> attachments;
     public List<IncludedModel> includedModels;
     public List<MaterialsPath> materialsPaths;
+    public List<Jigglebone> jigglebone;
 }
 
 public class QCParser
@@ -120,6 +128,28 @@ public class QCParser
 
                 info.materialsPaths.Add(material_path);
             }
+            /*
+            else if (line.StartsWith("$jigglebone"))
+            {
+                var jigglebone = new Jigglebone()
+                {
+                    Name = line.Split('"')[1],
+                    PropertyGroups = []
+                };
+                while ((line = ReadAndTrim()) != "}")
+                {
+                    if (line.StartsWith("studio"))
+                    {
+                        bodyGroups.models.Add(line.Split('"')[1]);
+                    }
+                    else if (line == "blank")
+                    {
+                        bodyGroups.models.Add("Blank");
+                    }
+                }
+                info.bodyGroups.Add(bodyGroups);
+            }
+            */
         }
         return info;
     }
