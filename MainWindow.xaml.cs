@@ -114,7 +114,7 @@ namespace qc_reader {
             {
                 var item = new TreeViewItem()
                 {
-                    Header = materialsPaths_v.path
+                    Header = "'" + materialsPaths_v.path + "'"
                 };
 
                 materialpath.Items.Add(item);
