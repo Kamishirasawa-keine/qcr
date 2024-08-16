@@ -77,13 +77,13 @@ namespace qcre
 
                 switch (tokens[0])
                 {
-                    case "}":
+                    case "{":
                         if (!isStarted)
                             isStarted = true;
                         else
                             throw new Exception("Duplicate open bracket");
                         break;
-                    case "{":
+                    case "}":
                         if (!isStarted)
                             throw new Exception("Got an close bracket but there's no open bracket before it");
                         isEnded = true;
@@ -121,13 +121,13 @@ namespace qcre
 
                 switch (tokens[0])
                 {
-                    case "}":
+                    case "{":
                         if (!isStarted)
                             isStarted = true;
                         else
                             throw new Exception("Duplicate open bracket");
                         break;
-                    case "{":
+                    case "}":
                         if (!isStarted)
                             throw new Exception("Got an close bracket but there's no open bracket before it");
                         isEnded = true;
