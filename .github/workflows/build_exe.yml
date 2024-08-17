@@ -1,0 +1,30 @@
+name: build
+
+on: [push, pull_request]
+
+jobs:
+    build:
+        runs-on: windows-latest
+        steps:
+            - name: checkout
+              uses: actions/checkout@v4.1.7
+              with:
+                fetch-depth: 0
+
+            - name: setup dotnet
+              uses: actions/setup-dotnet@v4.0.1
+              with:
+                dotnet-version: "8.0.0"
+            
+            - name: setup msbuild
+              uses: microsoft/setup-msbuild@v2
+
+            - name: build
+              run: msbuild qcre.sln
+
+            - name: upload artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                name: binary files
+                path: bin/Debug/net8.0-windows
+    
