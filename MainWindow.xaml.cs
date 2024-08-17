@@ -16,29 +16,42 @@ namespace qcre
         public MainWindow()
         {
             InitializeComponent();
-            var parser = new QCParser();
-            var model = parser.Parse(PathBox.Text);
-            //InfoView.Items.Add(BuildTree(model, "root"));
         }
-        static TreeViewItem BuildTree(object obj, string name)
+
+        private void OpenFile(object sender, RoutedEventArgs e)
         {
-            var item = new TreeViewItem();
-
-            item.Name = name;
-            Type type = obj.GetType();
-
-            if(type.IsPrimitive||type == typeof(string))
-                item.Name = obj.ToString();
-            else
+            var fileDlg = new Microsoft.Win32.OpenFileDialog
             {
-                foreach(var field in type.GetFields())
-                {
-                    var child = BuildTree(field.GetValue(obj), field.Name);
-                    item.Items.Add(child);
-                }
+                Filter = "QC File (*.qc)|*.qc"
+            };
+
+            bool? result = fileDlg.ShowDialog();
+            
+            if (result != true)
+            {
+                MessageBox.Show("Select a valid file", "Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
 
-            return item;
+            var parser = new QCParser();
+            currentModel = parser.Parse(fileDlg.FileName);
         }
+
+        private void SaveFile(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void CloseFile(object sender, RoutedEventArgs e)
+        {
+            currentModel = null;
+        }
+
+        private void Exit(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private QCModel? currentModel = null;
     }
 }

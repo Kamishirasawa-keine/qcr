@@ -55,6 +55,9 @@ namespace qcre
                         throw new Exception($"Unknown token: {tokens[0]}");
                 }
             }
+
+            streamReader.Close();
+            streamReader = null;
             return model;
         }
         QCBodyGroup ParseBodyGroup(string bodyGroupName)
@@ -156,6 +159,6 @@ namespace qcre
         {
             return line.StartsWith("//") || line == "";     //Skip comment and empty line
         }
-        private StreamReader streamReader;
+        private StreamReader? streamReader;
     }
 }

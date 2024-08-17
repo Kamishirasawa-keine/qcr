@@ -5,21 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:qcre"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <GroupBox Header="File" Grid.Column="0">
-            <StackPanel VerticalAlignment="Center">
-                <TextBox Text="D:/Projects/qcinfo/test.qc" x:Name="PathBox"/>
-                <Button Content="Browse"/>
-                <Button Content="Parse"/>
-            </StackPanel>
-        </GroupBox>
-        <GroupBox Header="Info" Grid.Column="1">
-            <TreeView x:Name="InfoView"/>
-        </GroupBox>
-    </Grid>
+        Title="MainWindow" Height="500" Width="400">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="Open" Click="OpenFile"/>
+                <MenuItem Header="Save" Click="SaveFile"/>
+                <MenuItem Header="Close" Click="CloseFile"/>
+                <Separator/>
+                <MenuItem Header="Exit" Click="Exit"/>
+            </MenuItem>
+        </Menu>
+        <TreeView x:Name="InfoView"/>
+    </DockPanel>
 </Window>
