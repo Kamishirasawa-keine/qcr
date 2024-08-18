@@ -201,6 +201,7 @@ namespace qcre
                     case "{":
                         if (isStarted)
                             throw new Exception("Duplicated open bracket");
+                        isStarted = true;
                         break;
                     case "}":
                         if (!isStarted)

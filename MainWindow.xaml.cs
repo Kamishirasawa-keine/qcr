@@ -26,7 +26,7 @@ namespace qcre
             };
 
             bool? result = fileDlg.ShowDialog();
-            
+
             if (result != true)
             {
                 MessageBox.Show("Select a valid file", "Failed", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -35,6 +35,7 @@ namespace qcre
 
             var parser = new QCParser();
             currentModel = parser.Parse(fileDlg.FileName);
+            InfoView.Items.Clear();
         }
 
         private void SaveFile(object sender, RoutedEventArgs e)
@@ -51,7 +52,6 @@ namespace qcre
         {
             Application.Current.Shutdown();
         }
-
         private QCModel? currentModel = null;
     }
 }
