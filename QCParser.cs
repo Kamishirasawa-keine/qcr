@@ -1,31 +1,9 @@
 ﻿#pragma warning disable CS8600
+#pragma warning disable CS8602
 using System.IO;
 
 namespace qcre
 {
-    struct QCModel
-    {
-        public string modelName;
-    }
-    struct QCJiggleBone
-    {
-        public string boneName;
-        public int boneIndex;
-    }
-    struct QCJiggleFlexible
-    {
-        public float yawStiffness;
-        public float yawDamping;
-        public float pitchStiffness;
-        public float pitchDamping;
-        public float alongStiffness;
-        public float alongDamping;
-    }
-    struct QCBodyGroup
-    {
-        public string bodyGroupName;
-        public string[] models;
-    }
     class QCParser
     {
         public QCModel Parse(string path)
@@ -54,6 +32,9 @@ namespace qcre
                         case "$jigglebone":
                             ParseJiggleBone(tokens[1].Trim('\"'));
                             break;
+                        case "$attachment":
+                            ParseAttachment(tokens);
+                            break;
                         default:
                             throw new Exception($"Unknown token: {tokens[0]}");
                     }
@@ -71,7 +52,6 @@ namespace qcre
 
             ProcessBlock(line =>
             {
-                var tokens = line.Split(' ');
                 switch (tokens[0])
                 {
                     case "studio":
@@ -81,7 +61,7 @@ namespace qcre
                         models.Add("Blank");
                         break;
                     default:
-                        throw new Exception($"Unknown token in body group: {tokens[0]}");
+                        throw new Exception($"Unknown token: {tokens[0]}");
                 }
             });
 
@@ -97,7 +77,6 @@ namespace qcre
 
             ProcessBlock(line =>
             {
-                var tokens = line.Split(' ');
                 switch (tokens[0])
                 {
                     case "is_flexible":
@@ -105,12 +84,14 @@ namespace qcre
                         break;
                     case "is_rigid":    //TODO
                         break;
-                    case "has_base_spring": //TODO
+                    case "has_base_spring":
+                        ParseJiggleBaseSpring();
                         break;
-                    case "is_boing":    //TODO
+                    case "is_boing":
+                        ParseJiggleBoing();
                         break;
                     default:
-                        throw new Exception($"Unknown token in jigglebone: {tokens[0]}");
+                        throw new Exception($"Unknown token: {tokens[0]}");
                 }
             });
 
@@ -122,7 +103,6 @@ namespace qcre
 
             ProcessBlock(line =>
             {
-                var tokens = line.Split(' ');
                 switch (tokens[0])
                 {
                     case "yaw_stiffness":
@@ -144,14 +124,69 @@ namespace qcre
                         flexible.alongDamping = float.Parse(tokens[1]);
                         break;
                     default:
-                        throw new Exception($"Unknown token in jigglebone flexible: {tokens[0]}");
+                        throw new Exception($"Unknown token: {tokens[0]}");
                 }
             });
 
             return flexible;
         }
+        QCJiggleBaseSpring ParseJiggleBaseSpring()
+        {
+            var baseSpring = new QCJiggleBaseSpring();
+
+            ProcessBlock(line =>
+            {
+                switch (tokens[0])
+                {
+                    default:
+                        throw new Exception($"Unknown token: {tokens[0]}");
+                }
+            });
+
+            return baseSpring;
+        }
+        QCJiggleBoing ParseJiggleBoing()
+        {
+            var boing = new QCJiggleBoing();
+
+            ProcessBlock(line =>
+            {
+                switch (tokens[0])
+                {
+                    default:
+                        throw new Exception($"Unknown token: {tokens[0]}");
+                }
+            });
+
+            return boing;
+        }
+        QCAttachment ParseAttachment(string[] tokens)
+        {
+            //$attachment(0) "attachmentName"(1) "boneName"(2) x(3) y(4) z(5) option(6) x(7) y(8) z(9)
+            var attachment = new QCAttachment()
+            {
+                attachmentName = tokens[1].Trim('\"'),
+                boneName = tokens[2].Trim('\"'),
+                position = new System.Numerics.Vector3(float.Parse(tokens[3]), float.Parse(tokens[4]), float.Parse(tokens[5]))
+            };
+
+            switch (tokens[6])
+            {
+                case "absolute":
+                case "rigid":
+                case "world_align":
+                case "rotate":
+                case "x_and_z_axes":
+                    break;
+                default:
+                    throw new Exception($"Unknown attachment option: {tokens[6]}");
+            }
+
+            return attachment;
+        }
         private void ProcessBlock(Action<string> action)
         {
+            tokens = null;
             bool isStarted = false;
             bool isEnded = false;
 
@@ -173,6 +208,7 @@ namespace qcre
                         isEnded = true;
                         break;
                     default:
+                        tokens = line.Split(' ');
                         action(line);
                         break;
                 }
@@ -180,6 +216,7 @@ namespace qcre
         }
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         static bool ShouldSkip(string line) => line.StartsWith("//") || line == "";     //Skip comment and empty line
-        private StreamReader? streamReader;
+        private StreamReader? streamReader = null;
+        private string[]? tokens = null;
     }
 }
