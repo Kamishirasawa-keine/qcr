@@ -1,13 +1,5 @@
 ﻿#pragma warning disable CS8600
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 
 namespace qcre
 {
@@ -19,6 +11,15 @@ namespace qcre
     {
         public string boneName;
         public int boneIndex;
+    }
+    struct QCJiggleFlexible
+    {
+        public float yawStiffness;
+        public float yawDamping;
+        public float pitchStiffness;
+        public float pitchDamping;
+        public float alongStiffness;
+        public float alongDamping;
     }
     struct QCBodyGroup
     {
@@ -32,32 +33,32 @@ namespace qcre
             var model = new QCModel();
             streamReader = new StreamReader(path);
 
-            string line;
-            while ((line = streamReader.ReadLine()) != null)
+            using (streamReader = new StreamReader(path))
             {
-                line = line.Trim();
-                if (ShouldSkip(line))
-                    continue;
-                var tokens = line.Split(' ');
-
-                switch (tokens[0])
+                string line;
+                while ((line = streamReader.ReadLine()) != null)
                 {
-                    case "$modelname":
-                        model.modelName = tokens[1].Trim('\"');
-                        break;
-                    case "$bodygroup":
-                        ParseBodyGroup(tokens[1].Trim('\"'));
-                        break;
-                    case "$jigglebone":
-                        ParseJiggleBone(tokens[1].Trim('\"'));
-                        break;
-                    default:
-                        throw new Exception($"Unknown token: {tokens[0]}");
+                    line = line.Trim();
+                    if (ShouldSkip(line))
+                        continue;
+                    var tokens = line.Split(' ');
+
+                    switch (tokens[0])
+                    {
+                        case "$modelname":
+                            model.modelName = tokens[1].Trim('\"');
+                            break;
+                        case "$bodygroup":
+                            ParseBodyGroup(tokens[1].Trim('\"'));
+                            break;
+                        case "$jigglebone":
+                            ParseJiggleBone(tokens[1].Trim('\"'));
+                            break;
+                        default:
+                            throw new Exception($"Unknown token: {tokens[0]}");
+                    }
                 }
             }
-
-            streamReader.Close();
-            streamReader = null;
             return model;
         }
         QCBodyGroup ParseBodyGroup(string bodyGroupName)
@@ -66,31 +67,13 @@ namespace qcre
             {
                 bodyGroupName = bodyGroupName,
             };
-
-            string line;
-            bool isStarted = false;
-            bool isEnded = false;
             var models = new List<string>();
-            while ((line = streamReader.ReadLine()) != null && !isEnded)
-            {
-                line = line.Trim();
-                if (ShouldSkip(line))
-                    continue;
-                var tokens = line.Split(' ');
 
+            ProcessBlock(line =>
+            {
+                var tokens = line.Split(' ');
                 switch (tokens[0])
                 {
-                    case "{":
-                        if (!isStarted)
-                            isStarted = true;
-                        else
-                            throw new Exception("Duplicate open bracket");
-                        break;
-                    case "}":
-                        if (!isStarted)
-                            throw new Exception("Got an close bracket but there's no open bracket before it");
-                        isEnded = true;
-                        break;
                     case "studio":
                         models.Add(tokens[1].Trim('\"'));
                         break;
@@ -100,7 +83,7 @@ namespace qcre
                     default:
                         throw new Exception($"Unknown token in body group: {tokens[0]}");
                 }
-            }
+            });
 
             bodyGroup.models = [.. models];
             return bodyGroup;
@@ -112,29 +95,11 @@ namespace qcre
                 boneName = boneName,
             };
 
-            string line;
-            bool isStarted = false;
-            bool isEnded = false;
-            while ((line = streamReader.ReadLine()) != null && !isEnded)
+            ProcessBlock(line =>
             {
-                line = line.Trim();
-                if (ShouldSkip(line))
-                    continue;
                 var tokens = line.Split(' ');
-
                 switch (tokens[0])
                 {
-                    case "{":
-                        if (!isStarted)
-                            isStarted = true;
-                        else
-                            throw new Exception("Duplicate open bracket");
-                        break;
-                    case "}":
-                        if (!isStarted)
-                            throw new Exception("Got an close bracket but there's no open bracket before it");
-                        isEnded = true;
-                        break;
                     case "is_flexible":
                         ParseJiggleFlexible();
                         break;
@@ -147,18 +112,74 @@ namespace qcre
                     default:
                         throw new Exception($"Unknown token in jigglebone: {tokens[0]}");
                 }
-            }
+            });
+
             return jigglebone;
         }
-        void ParseJiggleFlexible()
+        QCJiggleFlexible ParseJiggleFlexible()
         {
+            var flexible = new QCJiggleFlexible();
 
+            ProcessBlock(line =>
+            {
+                var tokens = line.Split(' ');
+                switch (tokens[0])
+                {
+                    case "yaw_stiffness":
+                        flexible.yawStiffness = float.Parse(tokens[1]);
+                        break;
+                    case "yaw_damping":
+                        flexible.yawDamping = float.Parse(tokens[1]);
+                        break;
+                    case "pitch_stiffness":
+                        flexible.pitchStiffness = float.Parse(tokens[1]);
+                        break;
+                    case "pitch_damping":
+                        flexible.pitchDamping = float.Parse(tokens[1]);
+                        break;
+                    case "along_stiffness":
+                        flexible.alongStiffness = float.Parse(tokens[1]);
+                        break;
+                    case "along_damping":
+                        flexible.alongDamping = float.Parse(tokens[1]);
+                        break;
+                    default:
+                        throw new Exception($"Unknown token in jigglebone flexible: {tokens[0]}");
+                }
+            });
+
+            return flexible;
+        }
+        private void ProcessBlock(Action<string> action)
+        {
+            bool isStarted = false;
+            bool isEnded = false;
+
+            while (!isEnded && (streamReader.ReadLine() is string line))
+            {
+                line = line.Trim();
+                if (ShouldSkip(line))
+                    continue;
+
+                switch (line)
+                {
+                    case "{":
+                        if (isStarted)
+                            throw new Exception("Duplicated open bracket");
+                        break;
+                    case "}":
+                        if (!isStarted)
+                            throw new Exception("Close bracket without an open bracket");
+                        isEnded = true;
+                        break;
+                    default:
+                        action(line);
+                        break;
+                }
+            }
         }
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        bool ShouldSkip(string line)
-        {
-            return line.StartsWith("//") || line == "";     //Skip comment and empty line
-        }
+        static bool ShouldSkip(string line) => line.StartsWith("//") || line == "";     //Skip comment and empty line
         private StreamReader? streamReader;
     }
 }

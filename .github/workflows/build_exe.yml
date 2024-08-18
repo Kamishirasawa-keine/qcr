@@ -6,24 +6,24 @@ jobs:
     build:
         runs-on: windows-latest
         steps:
-            - name: checkout
+            - name: Checkout
               uses: actions/checkout@v4.1.7
               with:
                 fetch-depth: 0
 
-            - name: setup dotnet
+            - name: Setup dotnet
               uses: actions/setup-dotnet@v4.0.1
             
-            - name: setup msbuild
+            - name: Setup msbuild
               uses: microsoft/setup-msbuild@v2
 
-            - name: restore
+            - name: Restore solution
               run: msbuild qcre.sln /t:Restore /p:Configuration=Debug 
 
-            - name: build
+            - name: Build
               run: msbuild qcre.sln /p:Configuration=Debug 
 
-            - name: upload artifacts
+            - name: Upload artifacts
               uses: actions/upload-artifact@v4
               with:
                 name: binary files
